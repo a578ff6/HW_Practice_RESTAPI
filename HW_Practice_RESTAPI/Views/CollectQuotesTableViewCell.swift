@@ -23,7 +23,6 @@ class CollectQuotesTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
-    
     func configure(with quote: Quote) {
         collectQuoteBodyLabel.text = quote.body ?? "No Cotent"
         collecAutherLabel.text = quote.author ?? "Unknown"
