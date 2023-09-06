@@ -60,6 +60,11 @@ class FavoriteQuoteDetailViewController: UIViewController {
     
     /// 分享引言按鈕
     @IBAction func shareQuoteButtonTapped(_ sender: UIButton) {
+        // 如果speechSynthesizer正在說話，則停止它
+        if speechSynthesizer.isSpeaking {
+            speechSynthesizer.stopSpeaking(at: .immediate)
+        }
+        
         // 確保有引言可以分享
         guard let quoteText = quoteBodyDetailLabel.text,
                 let author = quoteAuthorDetailLabel.text else { return }

@@ -28,7 +28,6 @@ class MainListOfQuotesTableViewController: UITableViewController {
         loadQuotes()
         // 註冊「取消收藏引言」的通知
         NotificationCenter.default.addObserver(self, selector: #selector(quoteUnfavorited(_:)), name: NSNotification.Name("QuoteUnfavorited"), object: nil)
-
         // 設置活動指示器
         setupActivityIndicator()
         // 設置分頁相關功能
@@ -102,15 +101,24 @@ class MainListOfQuotesTableViewController: UITableViewController {
     // MARK: - Notifications
     /// 當接收到取消收藏名言的通知，找到具有相對應 ID 的名言，然後更新收藏狀態（學習）
     @objc func quoteUnfavorited(_ notification: Notification) {
-        
+
+        // 1.通知中提取名言的ID。
+        // 2.找到具有該ID的名言在 quoteItems 陣列中的索引。
+        // 3.確保可以正確地從 quoteItems 陣列中提取 userDetails。
         guard let quoteID = notification.object as? Int,
-              let index = quoteItems.firstIndex(where: {$0.id == quoteID}) else { return }
-        
+              let index = quoteItems.firstIndex(where: {$0.id == quoteID}),
+              var userDetails = quoteItems[index].userDetails
+        else {
+            return
+        }
+
         // 更新這個名言的收藏狀態
-        quoteItems[index].userDetails.favorite = false
-        let indexPath = IndexPath(row: index, section: 0)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
-    }
+        userDetails.favorite = false                                // false 未收藏。
+        quoteItems[index].userDetails = userDetails                 // 使用更新後的 userDetails 更新 quoteItems 陣列中的名言。
+        let indexPath = IndexPath(row: index, section: 0)           // 計算名言在 tableView 中的位置。
+        tableView.reloadRows(at: [indexPath], with: .automatic)     // 刷新對應的cell。
+      }
+   
     
     // MARK: - Table view data source
     /// 設定表格視圖的行數
@@ -214,10 +222,14 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
     func didTapFavoriteButton(in cell: QuoteTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let selectedQuote = quoteItems[indexPath.row]
+        
+        // 解包 userDetails
+        guard let userDetails = selectedQuote.userDetails else { return }
+        
         // 切換名言的收藏狀態
         toggleFavorite(for: selectedQuote, at: indexPath)
         // 根據收藏狀態更新按鈕的圖示
-        cell.updateFavoriteButtonIcon(isFavorited: selectedQuote.userDetails.favorite)
+        cell.updateFavoriteButtonIcon(isFavorited: userDetails.favorite)
     }
     
     /// 處理點擊朗讀引言
@@ -239,8 +251,11 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
     
     /// 處理 收藏 / 取消收藏 的操作
     func toggleFavorite(for quote: Quote, at indexPath: IndexPath) {
+        // 解包 userDetails
+        guard let userDetails = quote.userDetails else { return }
+
         // 根據名言當前的收藏狀態來決定呼叫哪個 API endpoint（Fav Quote)
-        let endpoint = quote.userDetails.favorite ? "/api/quotes/\(quote.id)/unfav" : "/api/quotes/\(quote.id)/fav"
+        let endpoint = userDetails.favorite ? "/api/quotes/\(quote.id)/unfav" : "/api/quotes/\(quote.id)/fav"
         guard let url = URL(string: "https://favqs.com" + endpoint) else { return }
         
         // 創建API請求
@@ -268,9 +283,15 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
             let updatedQuote = try decoder.decode(Quote.self, from: data)
             self.quoteItems[indexPath.row] = updatedQuote   // 測試
             
+            // 解包 userDetails
+            guard let userDetails = updatedQuote.userDetails else {
+                print("UserDetails not found in the updated quote.")
+                return
+            }
+            
             // print("Updated quote:", self.quoteItems[indexPath.row])                 // 印出更新後的引言詳細資訊（測試）
             // 根據 API 回應的名言狀態決定要顯示的訊息（測試觀察收藏、取消收藏用）
-            print(updatedQuote.userDetails.favorite ? "Quote has been added to favorites!": "Quote has been removed from favorites!")
+            print(userDetails.favorite ? "Quote has been added to favorites!": "Quote has been removed from favorites!")
             
             DispatchQueue.main.async {
                 // 刷新表格，使更改在 UI 上生效

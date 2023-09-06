@@ -48,7 +48,7 @@ struct Quote: Codable {
     /// 引言的內容
     let body: String?
     /// 關於當前用戶與該引言互動的詳細資訊
-    var userDetails: UserDetails        // 為了能夠修改 favorite 的時候，更新收藏狀態，因此將 userDetails 和 favorite 屬性都標記為 var
+    var userDetails: UserDetails?        // 為了能夠修改 favorite 的時候，更新收藏狀態，因此將 userDetails 和 favorite 屬性都標記為 var
     
     enum CodingKeys: String, CodingKey {
         case id, dialogue, tags, url, author, body

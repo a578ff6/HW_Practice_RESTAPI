@@ -5,6 +5,12 @@
 //  Created by 曹家瑋 on 2023/9/1.
 //
 
+/*
+ 重要：
+ 當沒有收藏任何引言時，其實還是會透過' https://favqs.com/api/quotes/?filter=testTony&type=user'
+ 取得一個id為0的 "body": "No quotes found",引言。
+ */
+
 import UIKit
 
 /// 負責顯示和管理已收藏的引言
@@ -32,6 +38,7 @@ class CollectQuoteTableViewController: UITableViewController {
     /// 為 CollectQuoteTableViewController 單獨設置 title，並在每次視圖控制器出現時更改它。
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // print("View will appear. Number of collected quotes:", collectedQuotes.count)   // 測試觀察：在視圖即將出現時有多少已收藏的引言。
         self.tabBarController?.navigationItem.title = "Favorite Quotes"
     }
     
@@ -94,6 +101,7 @@ class CollectQuoteTableViewController: UITableViewController {
     
     /// 當名言的收藏狀態發生變化時，重新加載已收藏的名言列表
     @objc func reloadCollectedQuotes() {
+        // print("Received notification to reload collected quotes.")  // 測試觀察：當接收到 QuoteFavoritedStatusChanged 通知時，確保通知確實被發送並被接收。
         loadCollectedQuotes()
     }
     
@@ -107,7 +115,6 @@ class CollectQuoteTableViewController: UITableViewController {
         
         // 定義API的endpoint，用於取消收藏指定ID的引言。（Fav Quote）
         let endpoint = "/api/quotes/\(quote.id)/unfav"
-        
         // 建立URL（To unmark a quote as a user's favorite）
         guard let url = URL(string: "https://favqs.com" + endpoint) else {
             completion(false)    // 如果URL無效，回調返回失敗。
@@ -154,17 +161,24 @@ class CollectQuoteTableViewController: UITableViewController {
                 do {
                     // 解析 API 回應的 JSON 數據
                     let response = try decoder.decode(QuotesResponse.self, from: data)
-                    // 更新本地的 collectedQuotes 列表
-                    self.collectedQuotes = response.quotes
+                    // 檢查是否收到了假引言 "body": "No quotes found"（重要）
+                    if response.quotes.count == 1, response.quotes[0].body == "No quotes found" {
+                        self.collectedQuotes = []
+                    } else {
+                        // 更新本地的 collectedQuotes 列表
+                        self.collectedQuotes = response.quotes
+                    }
+                    
                     // 主線程中更新 tableView，顯示最新的名言列表
                     DispatchQueue.main.async {
+                        // print("Successfully loaded collected quotes. Count:", self.collectedQuotes.count)   // 測試觀察：已成功從API加載的收藏引言的數量。為了檢查與cell的數量。
                         self.tableView.reloadData()
                     }
                 } catch {
                     print("Error decoding response:", error)
                 }
             }
-                    
+
         }.resume()
     }
     
@@ -172,6 +186,7 @@ class CollectQuoteTableViewController: UITableViewController {
     func createAPIRequest(with url: URL, httpMethod: String) -> URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = httpMethod
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         let appToken = "55d03c09545078bc581705b093a7f0a2"
         request.setValue("Token token=\(appToken)", forHTTPHeaderField: "Authorization")
         
