@@ -7,7 +7,7 @@
 
 import Foundation
 
-// Get Quote API
+// List QuotesAPI、Get the public quotes favorited by user API、Get Quote API、Fav Quote API
 
 /// API回應的主結構
 struct QuotesResponse: Codable {
@@ -67,4 +67,15 @@ struct UserDetails: Codable {
     let upvote: Bool
 }
 
-
+/// 解析錯誤
+struct QuoteErrorResponse: Codable {
+    // 伺服器回傳的錯誤代碼
+    let errorCode: Int
+    // 伺服器回傳的錯誤消息
+    let message: String
+    
+    enum CodingKeys: String, CodingKey {
+        case errorCode = "error_code"
+        case message
+    }
+}

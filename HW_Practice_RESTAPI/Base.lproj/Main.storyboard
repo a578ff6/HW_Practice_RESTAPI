@@ -335,17 +335,17 @@
         <scene sceneID="3ZF-t1-i1M">
             <objects>
                 <tableViewController id="JRX-Mq-T60" userLabel="Main List Of Quotes Table View Controller" customClass="MainListOfQuotesTableViewController" customModule="HW_Practice_RESTAPI" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" pagingEnabled="YES" dataMode="prototypes" style="plain" allowsSelection="NO" rowHeight="708" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="j69-YA-8sd">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" pagingEnabled="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="619" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="j69-YA-8sd">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.090196078430000007" green="0.1019607843" blue="0.12941176469999999" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="separatorColor" red="0.40000000000000002" green="0.75294117650000003" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="QuoteTableViewCell" rowHeight="667" id="1Rv-d6-tUx" customClass="QuoteTableViewCell" customModule="HW_Practice_RESTAPI" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="50" width="393" height="667"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="QuoteTableViewCell" rowHeight="619" id="1Rv-d6-tUx" customClass="QuoteTableViewCell" customModule="HW_Practice_RESTAPI" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="50" width="393" height="619"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1Rv-d6-tUx" id="gQp-Ff-Q2L">
-                                    <rect key="frame" x="0.0" y="0.0" width="393" height="667"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="619"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="AuthorLabel" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CaX-xc-xC1">

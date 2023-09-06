@@ -82,8 +82,8 @@
 		932DAD1E2A9FD95400DEF255 /* HW_Practice_RESTAPI */ = {
 			isa = PBXGroup;
 			children = (
-				936C68F92AA2524900EE92D3 /* Views */,
 				932DAD3C2AA0B49500DEF255 /* Models */,
+				936C68F92AA2524900EE92D3 /* Views */,
 				932DAD3B2AA0B48500DEF255 /* View Controllers */,
 				932DAD1F2A9FD95400DEF255 /* AppDelegate.swift */,
 				932DAD212A9FD95400DEF255 /* SceneDelegate.swift */,

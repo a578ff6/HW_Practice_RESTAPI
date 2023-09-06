@@ -19,14 +19,17 @@ import SafariServices
 /// 登錄畫面
 class LoginViewController: UIViewController {
 
+    // MARK: - Outlets
     /// Email、用戶名稱的輸入欄位
     @IBOutlet weak var emailTextField: UITextField!
     /// 密碼輸入欄位
     @IBOutlet weak var passwordTextField: UITextField!
+    
+    // MARK: - Properties
     /// 用於表示正在進行網路操作等待時的活動指示器（告知使用者他們需要等待）
     let activityIndicator = UIActivityIndicatorView(style: .large)
 
-    
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,6 +39,7 @@ class LoginViewController: UIViewController {
         setupKeyboardHandling()
     }
     
+    // MARK: - UI Setup
     /// 初始化活動指示器的UI設置（點擊畫面，以及當在textfield輸入完畢點擊enter時會收起鍵盤）
     func setupActivityIndicatorUI() {
         activityIndicator.center = view.center
@@ -54,7 +58,7 @@ class LoginViewController: UIViewController {
         passwordTextField.delegate = self
     }
     
-    
+    // MARK: - User Actions
     /// 忘記密碼按鈕
     @IBAction func openForgotPasswordLinkButtonTapped(_ sender: UIButton) {
         if let url = URL(string: "https://favqs.com/forgot-password") {
@@ -71,6 +75,7 @@ class LoginViewController: UIViewController {
         login()
     }
     
+    // MARK: - API Calls
     /// 執行登錄操作
     func login() {
         // 驗證輸入欄位
@@ -85,7 +90,6 @@ class LoginViewController: UIViewController {
         let sessionRequestBody = UserRequestBody(user: UserSession(login: usernameOrEmail, password: password))
         
         guard let url = URL(string: "https://favqs.com/api/session") else { return }
-        
         var request = createURLRequest(url: url, requestBody: sessionRequestBody)
         request.httpMethod = "POST"
 
@@ -161,7 +165,9 @@ class LoginViewController: UIViewController {
         return request
     }
     
-    /// 啟動活動指示器並且取消UI互動
+    // MARK: - UI Handling
+
+    /// 啟動活動指示器並且禁止UI互動
     func startLoadingUI() {
         self.activityIndicator.startAnimating()
         self.view.isUserInteractionEnabled = false
@@ -187,6 +193,8 @@ class LoginViewController: UIViewController {
         view.endEditing(true)
     }
     
+    // MARK: - Navigation
+
     /// 隱藏在 TabBarController 中的返回按鈕（因為由 LoginVC 到 MainListVC ( 有 tabBarController）
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let tabBarController = segue.destination as? UITabBarController {
@@ -208,6 +216,7 @@ class LoginViewController: UIViewController {
         
 }
 
+// MARK: - TextField Delegate
 /// 點擊 "return" 鍵時，呼叫 textFieldShouldReturn 方法，並收起鍵盤
 extension LoginViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

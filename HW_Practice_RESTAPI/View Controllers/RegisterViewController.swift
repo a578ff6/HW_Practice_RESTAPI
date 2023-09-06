@@ -19,6 +19,7 @@ import UIKit
 /// RegisterViewController 負責註冊新帳號的流程
 class RegisterViewController: UIViewController {
 
+    // MARK: - Outlets
     /// 使用者的登入名稱
     @IBOutlet weak var loginTextField: UITextField!
     /// 使用者的電子郵件
@@ -26,6 +27,7 @@ class RegisterViewController: UIViewController {
     /// 使用者的密碼
     @IBOutlet weak var passwordTextField: UITextField!
     
+    // MARK: - Properties
     /// 驗證 login 的正則表達式（學習）
     let loginRegex = "^[a-zA-Z0-9_]{1,20}$"
     /// 驗證 email 的正則表達式（學習）
@@ -33,6 +35,7 @@ class RegisterViewController: UIViewController {
     /// 活動指示器（等待伺服器回應時，讓用戶知道目前正在執行）
     let activityIndicator = UIActivityIndicatorView(style: .large)
     
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,6 +46,7 @@ class RegisterViewController: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor(red: 42/255, green: 71/255, blue: 94/255, alpha: 1)        
     }
     
+    // MARK: - UI Setup
     /// 設定鍵盤的處理方法：點擊畫面以及當在textfield輸入完畢點擊enter時會收起鍵盤
     func setupKeyboardHandling() {
         // 添加手勢收起鍵盤
@@ -62,6 +66,7 @@ class RegisterViewController: UIViewController {
         view.addSubview(activityIndicator)
     }
     
+    // MARK: - User Actions
     /// 當用戶點擊註冊按鈕時進行的操作，包括驗證檢查輸入和發送API請求
     @IBAction func registerButtonTapped(_ sender: UIButton) {
         
@@ -96,6 +101,8 @@ class RegisterViewController: UIViewController {
         registerUser(login: login, email: email, password: password)
     }
     
+    // MARK: - Helpers
+
     /// 發送API請求進行用戶註冊
     func registerUser(login: String, email: String, password: String) {
         // 啟動活動指示器和禁止UI互動
@@ -104,13 +111,10 @@ class RegisterViewController: UIViewController {
         
         // 建立API請求
         let user = CreatUserRequestBody(user: CreateUser(login: login, email: email, password: password))
-        let url = URL(string: "https://favqs.com/api/users")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        let appToken = "55d03c09545078bc581705b093a7f0a2"       // App-Token
-        request.setValue("Token token=\(appToken)", forHTTPHeaderField: "Authorization")
         
+        guard let url = URL(string: "https://favqs.com/api/users") else { return }
+        var request = createRequest(for: url, httpMethod: "POST")
+  
         // 使用 JSONEncoder 將request進行編碼
         let encoder = JSONEncoder()
         do {
@@ -157,7 +161,6 @@ class RegisterViewController: UIViewController {
                 do {
                     let responseBody = try decoder.decode(CreatUserResponseBody.self, from: data)
                     // 儲存獲得的User Token和登錄名稱
-//                    UserDefaults.standard.setValue(responseBody.userToken, forKey: "userToken")   // 儲存User Token
                     UserDefaults.standard.set(responseBody.userToken, forKey: "userToken")
                     UserDefaults.standard.set(responseBody.login, forKey: "userLogin")            // 儲存用戶名 （用於使用者的個人資訊url、使用者的個人收藏列表）
                     // 顯示註冊成功消息
@@ -179,6 +182,15 @@ class RegisterViewController: UIViewController {
         }.resume()
     }
     
+    /// 創建 API 請求的方法
+    func createRequest(for url: URL, httpMethod: String) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = httpMethod
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        let appToken = "55d03c09545078bc581705b093a7f0a2"       // App-Token
+        request.setValue("Token token=\(appToken)", forHTTPHeaderField: "Authorization")
+        return request
+    }
     
     /// 顯示錯誤訊息
     func showAlert(message: String, success: Bool = false) {
@@ -191,7 +203,7 @@ class RegisterViewController: UIViewController {
                 self.performSegue(withIdentifier: "showMainListFromRegister", sender: self)
             }
         }
-        
+    
         alertController.addAction(okAction)
         self.present(alertController, animated: true)
     }
@@ -209,6 +221,7 @@ class RegisterViewController: UIViewController {
         view.endEditing(true)
     }
     
+    // MARK: - Navigation
     /// 隱藏在 TabBarController 中的返回按鈕（我在storyboard是由 RegisterVC 到 MainListVC ( 因為有tabBarController ）
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let tabBarController = segue.destination as? UITabBarController {
@@ -218,6 +231,7 @@ class RegisterViewController: UIViewController {
 
 }
 
+// MARK: - UITextFieldDelegate
 /// 點擊 "return" 鍵時，呼叫 textFieldShouldReturn 方法，並收起鍵盤
 extension RegisterViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

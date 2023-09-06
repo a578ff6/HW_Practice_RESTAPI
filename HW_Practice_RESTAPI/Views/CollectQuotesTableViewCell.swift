@@ -7,12 +7,13 @@
 
 import UIKit
 
-/// 顯示 CollectQuoteTableViewController 的客製化表格
+
+/// 用於顯示 `CollectQuoteTableViewController` 中的客製化 cell
 class CollectQuotesTableViewCell: UITableViewCell {
 
-    /// 收藏的引言文字內容
+    /// 顯示收藏引言的文字內容
     @IBOutlet weak var collectQuoteBodyLabel: UILabel!
-    /// 收藏的引言作者
+    /// 顯示收藏引言的作者名稱
     @IBOutlet weak var collecAutherLabel: UILabel!
     
     override func awakeFromNib() {
@@ -23,8 +24,12 @@ class CollectQuotesTableViewCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    /// 設定cell內容。
+     /// - Parameter quote: 用於設定單元格的引言。
     func configure(with quote: Quote) {
+        // 設置引言作者
         collectQuoteBodyLabel.text = quote.body ?? "No Cotent"
+        // 設置引言作者
         collecAutherLabel.text = quote.author ?? "Unknown"
     }
 

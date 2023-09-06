@@ -10,6 +10,7 @@ import UIKit
 /// 顯示使用者個人的詳細資訊
 class UserProfileViewController: UIViewController {
 
+    // MARK: - Properties and Outlets
     /// 使用者的email
     @IBOutlet weak var userEmailLabel: UILabel!
     /// 使用者的登錄名稱
@@ -25,12 +26,18 @@ class UserProfileViewController: UIViewController {
     
     /// App-Token
     let appToken = "55d03c09545078bc581705b093a7f0a2"
+    /// 活動指示器（等待伺服器回應時，讓用戶知道目前正在執行）
+    let activityIndicator = UIActivityIndicatorView(style: .large)
     
+    
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // 初始化用戶資料
         loadUserData()
-        
+        // 設置活動指示器
+        setupActivityIndicatorUI()
+
         // 當收藏引言狀態更改時，設定通知觀察者重新加載使用者資料
         // 每當 QuoteFavoritedStatusChanged 通知被發送時，UserProfileViewController 就會重新加載使用者資料，以反映收藏引言的最新狀態。
         NotificationCenter.default.addObserver(self, selector: #selector(loadUserData), name: NSNotification.Name("QuoteFavoritedStatusChanged"), object: nil)
@@ -41,6 +48,8 @@ class UserProfileViewController: UIViewController {
         super.viewWillAppear(animated)
         self.tabBarController?.navigationItem.title = "User Profile"
     }
+    
+    // MARK: - UI Actions
     
     /// 登出帳號（使用 UINavigationController去 push：因為 UserProfileViewController 在一個 UINavigationController 中，可以  pop 到登錄畫面。）
     @IBAction func logoutButtonTapped(_ sender: UIButton) {
@@ -58,17 +67,24 @@ class UserProfileViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
+    // MARK: - Methods
     
     /// 資料加載與更新
     @objc func loadUserData() {
+        
+        // 加載活動指示器並禁止UI互動（像伺服器請求資料）
+        startLoadingUI()
+        
         // 從 UserDefaults 中獲取使用者登錄名稱
         guard let userLogin = UserDefaults.standard.string(forKey: "userLogin") else {
             print("User Login not found!")
+            stopLoadingUI()  // 停止活動指示器
             return
         }
-        // 使用用戶的登錄名稱來建立API請求URL
+        // 使用 userLogin 建立API請求URL
         guard let url = URL(string: "https://favqs.com/api/users/\(userLogin)") else {
             print("Invalid URL!")
+            stopLoadingUI()  // 停止活動指示器
             return
         }
         
@@ -78,6 +94,9 @@ class UserProfileViewController: UIViewController {
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error fetching user data:", error)
+                DispatchQueue.main.async {
+                    self.stopLoadingUI()  // 停止活動指示器
+                }
                 return
             }
             
@@ -88,9 +107,13 @@ class UserProfileViewController: UIViewController {
                     // 在主線程更新UI
                     DispatchQueue.main.async {
                         self.updateUI(with: userData)
+                        self.stopLoadingUI()
                     }
                 } catch {
                     print("Error decoding response:", error)    // 如返回錯誤No user session found
+                    DispatchQueue.main.async {
+                        self.stopLoadingUI()  // 停止活動指示器
+                    }
                 }
             }
         }.resume()
@@ -160,6 +183,25 @@ class UserProfileViewController: UIViewController {
         followingLabel.text = userData.following.description
         followerLabel.text = userData.followers.description
         proUserSwitch.isOn = userData.pro ?? false
+    }
+    
+    /// 添加活動指示器到視圖中
+    func setupActivityIndicatorUI() {
+        view.addSubview(activityIndicator)
+        activityIndicator.center = view.center
+        activityIndicator.hidesWhenStopped = true
+    }
+    
+    /// 啟動活動指示器並且禁止UI互動
+    func startLoadingUI() {
+        self.activityIndicator.startAnimating()
+        self.view.isUserInteractionEnabled = false
+    }
+    
+    /// 停止活動指示器並且啟動UI互動
+    func stopLoadingUI() {
+        self.activityIndicator.stopAnimating()
+        self.view.isUserInteractionEnabled = true
     }
     
     // 確保移除Observer以避免內存泄漏
