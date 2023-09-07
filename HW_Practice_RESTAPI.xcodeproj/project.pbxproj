@@ -115,8 +115,8 @@
 				932DAD3D2AA0B6B200DEF255 /* CreatUserModels.swift */,
 				932DAD452AA1D8B100DEF255 /* UserSessionModels.swift */,
 				93E8587C2AA70C0800C1C565 /* DestroySessionModels.swift */,
-				936C69002AA47C3F00EE92D3 /* GetUserModels.swift */,
 				932DAD472AA21BA500DEF255 /* ListQuoteModels.swift */,
+				936C69002AA47C3F00EE92D3 /* GetUserModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -366,6 +366,7 @@
 				DEVELOPMENT_TEAM = P8FCS2FB8Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HW_Practice_RESTAPI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FavQuote;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -394,6 +395,7 @@
 				DEVELOPMENT_TEAM = P8FCS2FB8Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = HW_Practice_RESTAPI/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FavQuote;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

@@ -37,7 +37,6 @@ class QuoteTableViewCell: UITableViewCell {
     /// 當收藏按鈕被點擊，通知代理
     @IBAction func addToFavoritesButtonTapped(_ sender: UIButton) {
         delegate?.didTapFavoriteButton(in: self)
-        
     }
     
     /// 當朗讀按鈕被點擊，通知代理
@@ -55,34 +54,13 @@ class QuoteTableViewCell: UITableViewCell {
         
         // 解包 userDetails
         if let userDetails = quote.userDetails {
-            // 更新收藏按鈕的圖示
+            // 更新「收藏」按鈕的圖示
             updateFavoriteButtonIcon(isFavorited: userDetails.favorite)
         } else {
             // 打印一條消息，告知 userDetails 為 nil
             print("UserDetails not found in the provided quote.")
-
         }
-        // 更新收藏按鈕的圖示
     }
-    
-    /*
-     func configure(with quote: Quote) {
-         // 設置引言作者
-         quoteBodyLabel.text = quote.body ?? "No Content"
-         // 設置引言作者
-         authorLabel.text = quote.author ?? "Unknown"
-         
-         // 安全地解包 userDetails
-         if let userDetails = quote.userDetails {
-             // 更新收藏按鈕的圖示
-             updateFavoriteButtonIcon(isFavorited: userDetails.favorite)
-         } else {
-             // 這裡你可以設置默認的按鈕狀態，或者打印一條消息，告知 userDetails 為 nil
-             print("UserDetails not found in the provided quote.")
-         }
-     }
-
-     */
     
     /// 根據是否被收藏的狀態，更新收藏按鈕的圖示。
     ///  - Parameters: Bool藉此更新按鈕圖示

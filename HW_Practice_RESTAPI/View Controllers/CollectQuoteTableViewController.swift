@@ -85,7 +85,7 @@ class CollectQuoteTableViewController: UITableViewController {
                         // 成功取消收藏（從本地數據和視圖中移除該名言）
                         self.collectedQuotes.remove(at: indexPath.row)
                         // 從表格視圖中刪除該名言的行
-                        tableView.deleteRows(at: [indexPath], with: .automatic)
+                        tableView.deleteRows(at: [indexPath], with: .fade)
                         // 發送通知告 MainListOfQuotesTableViewController 這個名言已被取消收藏（根據id）
                         NotificationCenter.default.post(name: NSNotification.Name("QuoteUnfavorited"), object: quoteToUnfavorive.id)
                         // 這裡也發送 QuoteFavoritedStatusChanged 通知，以更新 UserProfileViewController的favoritesCountLabel

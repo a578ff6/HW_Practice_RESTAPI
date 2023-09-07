@@ -6,7 +6,6 @@
 //
 
 
-
 import UIKit
 import AVFoundation
 
@@ -72,7 +71,6 @@ class MainListOfQuotesTableViewController: UITableViewController {
     
     /// 設置分頁滾動調整：防止自動調整 contentInset （學習）
     func setupTableView() {
-        
         // 設置分頁效果
         tableView.isPagingEnabled = true
 
@@ -87,9 +85,7 @@ class MainListOfQuotesTableViewController: UITableViewController {
     // MARK: - User Interactions
     /// 滑動到另一個 cell 時朗讀停止
     override func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        // 確認當前的單元格是否與上一次的單元格不同，如果是，則停止朗讀
-        // 計算當前顯示的單元格索引
-        
+        // 確認當前的單元格是否與上一次的單元格不同，如果不同，則停止朗讀
         if tableView.indexPathsForVisibleRows != nil {
             // 如果 AVSpeechSynthesizer 正在朗讀，則停止它
             if speechSynthesizer.isSpeaking {
@@ -156,7 +152,6 @@ class MainListOfQuotesTableViewController: UITableViewController {
         
         // 在 URLSession 的回應中，當資料加載完畢或出現錯誤時，停止活動指示器
         URLSession.shared.dataTask(with: request) { data, response, error in
-            
             // 停止活動指示器並啟用UI互動
             DispatchQueue.main.async {
                 self.stopLoadingUI()
@@ -218,12 +213,13 @@ class MainListOfQuotesTableViewController: UITableViewController {
 /// 擴充 MainListOfQuotesTableViewController 以實現 QuoteCellDelegate
 extension MainListOfQuotesTableViewController: QuoteCellDelegate {
     
-    /// 當點擊收藏按鈕時執行的操作
+    /// 處理用戶點擊收藏按鈕的操作：會切換該名言的收藏狀態，並更新按鈕的圖示以反映新的收藏狀態。
+    /// - Parameter cell: 被點擊的名言所在的單元格。
     func didTapFavoriteButton(in cell: QuoteTableViewCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
+        // 從quoteItems陣列中獲得被點擊的名言
         let selectedQuote = quoteItems[indexPath.row]
-        
-        // 解包 userDetails
+        // 從被點擊的名言中解包 userDetails
         guard let userDetails = selectedQuote.userDetails else { return }
         
         // 切換名言的收藏狀態
@@ -248,26 +244,28 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
         speechUtterance.pitchMultiplier = 1.3
         speechSynthesizer.speak(speechUtterance)
     }
-    
-    /// 處理 收藏 / 取消收藏 的操作
+
+    /// 處理 收藏 / 取消收藏 的操作，根據名言當前的收藏狀態，這個函數會呼叫對應的API endpoint來切換收藏狀態。
+    /// - Parameters:
+    ///  - quote: 要被切換收藏狀態的名言。
+    ///  - indexPath: 名言在表格視圖中的位置，用於之後更新UI。
     func toggleFavorite(for quote: Quote, at indexPath: IndexPath) {
-        // 解包 userDetails
+        // 從名言中解包 userDetails
         guard let userDetails = quote.userDetails else { return }
 
         // 根據名言當前的收藏狀態來決定呼叫哪個 API endpoint（Fav Quote)
         let endpoint = userDetails.favorite ? "/api/quotes/\(quote.id)/unfav" : "/api/quotes/\(quote.id)/fav"
         guard let url = URL(string: "https://favqs.com" + endpoint) else { return }
         
-        // 創建API請求
+        // 使用創建API請求的函數來生成請求
         let request = createAPIRequest(with: url, httpMethod: "PUT")
-        
         // 發起API請求以切換收藏狀態
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Error toggling favorite:", error)
                 return
             }
-            
+            // 若成功獲得數據，則處理API回應
             if let data = data {
                 self.processFavoriteToggleResponse(data, for: indexPath)
             }
@@ -275,7 +273,10 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
         
     }
     
-    /// 處理收藏或取消收藏後的API回應
+    /// 處理收藏或取消收藏後的API回應。
+    /// - Parameters:
+    ///  - data: 從API接收到的數據。
+    ///  - indexPath: 名言在表格視圖中的位置，用於更新UI。
     func processFavoriteToggleResponse(_ data: Data, for indexPath: IndexPath) {
         let decoder = JSONDecoder()
         do {
@@ -289,7 +290,7 @@ extension MainListOfQuotesTableViewController: QuoteCellDelegate {
                 return
             }
             
-            // print("Updated quote:", self.quoteItems[indexPath.row])                 // 印出更新後的引言詳細資訊（測試）
+            // print("Updated quote:", self.quoteItems[indexPath.row])    // 印出更新後的引言詳細資訊（測試）
             // 根據 API 回應的名言狀態決定要顯示的訊息（測試觀察收藏、取消收藏用）
             print(userDetails.favorite ? "Quote has been added to favorites!": "Quote has been removed from favorites!")
             
